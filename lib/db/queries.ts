@@ -1,6 +1,6 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
 import { db } from './drizzle';
-import { activityLogs, teamMembers, teams, users } from './schema';
+import { activityLogs, teamMembers, teams, users, subscriptionPlans } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
 
@@ -126,4 +126,12 @@ export async function getTeamForUser(userId: number) {
   });
 
   return result?.teamMembers[0]?.team || null;
+}
+
+export async function getSubscriptionPlans() {
+  return await db
+    .select()
+    .from(subscriptionPlans)
+    .where(eq(subscriptionPlans.is_displayed, true))
+    .orderBy(subscriptionPlans.display_order);
 }

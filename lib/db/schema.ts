@@ -5,6 +5,9 @@ import {
   text,
   timestamp,
   integer,
+  numeric,
+  jsonb,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -66,6 +69,30 @@ export const invitations = pgTable('invitations', {
     .references(() => users.id),
   invitedAt: timestamp('invited_at').notNull().defaultNow(),
   status: varchar('status', { length: 20 }).notNull().default('pending'),
+});
+
+export const subscriptionPlans = pgTable('subscription_plans', {
+  id: serial('id').primaryKey(),
+  plan_code: varchar('plan_code', { length: 50 }).notNull().unique(),
+  plan_name: varchar('plan_name', { length: 100 }).notNull(),
+  plan_description: text('plan_description'),
+  price: numeric('price').notNull(),
+  billing_interval: varchar('billing_interval', { length: 20 }).notNull(),
+  trial_days: integer('trial_days'),
+  message_quota: integer('message_quota'),
+  features: jsonb('features'),
+  stripe_price_id: text('stripe_price_id').unique(),
+  is_displayed: boolean('is_displayed').default(true).notNull(),
+  display_order: integer('display_order').default(0),
+  created_at: timestamp('created_at').notNull().defaultNow(),
+  updated_at: timestamp('updated_at').notNull().defaultNow(),
+  is_default: boolean('is_default').default(false).notNull(),
+  homepage: boolean('homepage').default(false).notNull(),
+  funnelkit_tag_ids: text('funnelkit_tag_ids'),
+  funnelkit_list_ids: text('funnelkit_list_ids'),
+  funnelkit_tag_ids_remove: text('funnelkit_tag_ids_remove'),
+  funnelkit_list_ids_remove: text('funnelkit_list_ids_remove'),
+  subscription_ended_tag: boolean('subscription_ended_tag').default(false).notNull()
 });
 
 export const teamsRelations = relations(teams, ({ many }) => ({
